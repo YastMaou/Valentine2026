@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordle Game - Cinta Edition</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            background: linear-gradient(145deg, #1a3a2c 0%, #2d3a2c 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            margin: 0;
+            transition: all 0.5s ease;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body.pink-theme {
+            background: linear-gradient(145deg, #1a1e2c 0%, #2d1e2c 100%);
+        }
+        
+        body.heart-rain {
+            overflow-y: hidden;
+        }
+        
+        .game-wrapper {
+            max-width: 700px;
+            width: 100%;
+            transition: all 0.5s ease;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .game-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            border-radius: 24px;
+            padding: 15px 20px;
+            box-shadow: 0 12px 25px rgba(0,0,0,0.5);
+            border: 1px solid rgba(200,255,200,0.3);
+            width: 100%;
+            transition: all 0.5s ease;
+            min-height: 580px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        body.pink-theme .game-container {
+            border: 1px solid rgba(255,200,200,0.3);
+        }
+        
+        h1 {
+            color: #8bc34a;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-shadow: 0 0 8px #4caf50, 0 0 15px #2e7d32;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2rem;
+            transition: all 0.5s ease;
+        }
+        
+        h1.pink-text {
+            color: #ffb7c5;
+            text-shadow: 0 0 8px #ff4d6d, 0 0 15px #ff1e4d;
+        }
+        
+        p {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            color: white;
+        }
+        
+        .board {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+        
+        .row {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+        
+        .tile {
+            width: 45px;
+            height: 45px;
+            border: 2px solid #5a4a6e;
+            background: #0f0f17;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+            color: white;
+            text-transform: uppercase;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 0 #08090e;
+        }
+        
+        .tile.filled {
+            border-color: #b280b0;
+            background: #2a1e2e;
+            animation: pop 0.1s ease;
+        }
+        
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .tile.gray { background: #3a3f5e; border-color: #2a2e44; color: #c5cae9; }
+        .tile.yellow { background: #b59f3b; border-color: #8b7a2c; color: white; }
+        .tile.green { background: #538d4e; border-color: #3a6b36; color: white; }
+        
+        .tile.pink {
+            background: #d45c6c;
+            border-color: #a04350;
+            color: white;
+        }
+        
+        .keyboard {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-top: 12px;
+            transition: opacity 0.5s ease;
+        }
+        
+        .key-row {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        
+        .key {
+            background: #2d3349;
+            border: none;
+            color: white;
+            font-weight: bold;
+            padding: 8px 8px;
+            border-radius: 8px;
+            font-size: 15px;
+            min-width: 38px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #15181f;
+            transition: 0.05s linear;
+            border: 1px solid #4a5070;
+        }
+        
+        .key:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #15181f;
+        }
+        
+        .key.special {
+            background: #6b4e71;
+            min-width: 65px;
+            font-size: 14px;
+        }
+        
+        .key.yellow-bg {
+            background: #b59f3b;
+            border-color: #8b7a2c;
+            animation: shake 0.3s ease;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .message-area {
+            min-height: 35px;
+            margin: 8px 0 3px;
+            text-align: center;
+            font-size: 1.1rem;
+            color: #ffdbdb;
+            font-weight: 600;
+            padding: 3px;
+            animation: messagePop 0.3s ease;
+        }
+        
+        @keyframes messagePop {
+            0% { transform: scale(0.9); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .new-game-btn {
+            background: #8bc34a;
+            color: #1e1e2a;
+            border: none;
+            font-weight: bold;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #4caf50;
+            transition: 0.07s;
+            display: block;
+            margin: 8px auto 0;
+            border: 2px solid #c5e1a5;
+        }
+        
+        .new-game-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #4caf50;
+        }
+        
+        .new-game-btn.pink-btn {
+            background: #ffb7c5;
+            box-shadow: 0 4px 0 #b36b7a;
+            border: 2px solid #ffdbdb;
+        }
+        
+        /* TOMBOL LANJUT */
+        .lanjut-btn-container {
+            display: flex;
+            justify-content: center;
+            margin: 10px auto 5px;
+            width: 100%;
+            height: 54px;
+        }
+        
+        .lanjut-btn {
+            background: #8bc34a;
+            color: white;
+            border: none;
+            font-weight: bold;
+            padding: 8px 25px;
+            border-radius: 40px;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #4caf50, 0 0 15px #8bc34a;
+            transition: 0.07s;
+            border: 2px solid #c5e1a5;
+            letter-spacing: 3px;
+            text-shadow: 0 0 12px white;
+        }
+        
+        .lanjut-btn.pink-theme-btn {
+            background: #ff8c9c;
+            box-shadow: 0 6px 0 #b36b7a, 0 0 15px #ff4d6d;
+            border: 2px solid #ffdbdb;
+            animation: glow-pulse 1.5s infinite;
+        }
+        
+        @keyframes glow-pulse {
+            0% { box-shadow: 0 6px 0 #b36b7a, 0 0 15px #ff4d6d; }
+            50% { box-shadow: 0 6px 0 #b36b7a, 0 0 30px #ff99aa; }
+            100% { box-shadow: 0 6px 0 #b36b7a, 0 0 15px #ff4d6d; }
+        }
+        
+        .letter-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease;
+        }
+        
+        .letter-container.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .letter {
+            background: #fff9e6;
+            width: 600px;
+            max-width: 90%;
+            padding: 25px 25px;
+            border-radius: 20px;
+            box-shadow: 0 20px 35px rgba(255,100,150,0.7);
+            transform: scale(0.7) rotate(-5deg);
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 5px solid #ffc2c2;
+            position: relative;
+            color: #4a2e3a;
+            text-align: center;
+        }
+        
+        .letter.show {
+            transform: scale(1) rotate(0deg);
+        }
+        
+        .letter::before {
+            content: '❤️';
+            position: absolute;
+            top: -12px;
+            left: -12px;
+            font-size: 35px;
+            transform: rotate(-15deg);
+        }
+        
+        .letter::after {
+            content: '❤️';
+            position: absolute;
+            bottom: -12px;
+            right: -12px;
+            font-size: 35px;
+            transform: rotate(15deg);
+        }
+        
+        .letter h2 {
+            font-size: 24px;
+            margin-bottom: 12px;
+            color: #d45c6c;
+            font-family: 'Georgia', serif;
+            text-align: center;
+            text-shadow: 2px 2px 0 #ffe0e0;
+        }
+        
+        .letter p {
+            font-size: 20px;
+            line-height: 1.4;
+            color: #5a3a4a;
+            text-align: center;
+            font-weight: bold;
+            font-family: 'Brush Script MT', cursive;
+            margin-bottom: 15px;
+        }
+        
+        .letter-enter-btn {
+            background: #ff8c9c;
+            color: white;
+            border: none;
+            font-weight: bold;
+            padding: 10px 25px;
+            border-radius: 35px;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #b36b7a;
+            transition: 0.07s;
+            border: 2px solid white;
+            margin-top: 8px;
+        }
+        
+        .letter-enter-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #b36b7a;
+        }
+        
+        .mini-wordle-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #1a1e2c 0%, #2d1e2c 100%);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+        
+        .mini-board {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+        
+        .mini-tile {
+            width: 60px;
+            height: 60px;
+            border: 3px solid #b280b0;
+            background: #0f0f17;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 34px;
+            font-weight: bold;
+            color: white;
+            text-transform: uppercase;
+            border-radius: 12px;
+            box-shadow: 0 5px 0 #08090e;
+        }
+        
+        .mini-tile.filled {
+            border-color: #ff99aa;
+            background: #3a2a3a;
+        }
+        
+        .mini-keyboard {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 500px;
+            margin-top: 15px;
+        }
+        
+        .mini-key {
+            background: #2d3349;
+            border: none;
+            color: white;
+            font-weight: bold;
+            padding: 10px 12px;
+            border-radius: 12px;
+            font-size: 24px;
+            min-width: 55px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #15181f;
+            transition: 0.05s linear;
+            border: 2px solid #6b4e71;
+        }
+        
+        .mini-key:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #15181f;
+        }
+        
+        .mini-key.yellow-bg {
+            background: #b59f3b;
+        }
+        
+        .message-mini {
+            font-size: 20px;
+            color: #ffdbdb;
+            margin: 12px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .heart {
+            position: fixed;
+            font-size: 18px;
+            user-select: none;
+            pointer-events: none;
+            z-index: 9999;
+            animation: floatHeart 3s ease-in forwards;
+            color: #ff4d6d;
+            text-shadow: 0 0 12px #ff99aa;
+        }
+        
+        @keyframes floatHeart {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+        
+        .short-message-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(145deg, #1a1e2c 0%, #2d1e2c 100%);
+            z-index: 4000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .short-message {
+            font-size: 48px;
+            color: #ffb7c5;
+            text-align: center;
+            font-weight: bold;
+            text-shadow: 0 0 30px #ff4d6d, 0 0 60px #ff1e4d;
+            animation: heartbeat 1.5s infinite;
+            margin-bottom: 25px;
+            padding: 15px;
+            line-height: 1.3;
+        }
+        
+        .redirect-message {
+            font-size: 20px;
+            color: #ffdbdb;
+            text-align: center;
+            animation: fadeInOut 2s infinite;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .invisible {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        footer {
+            color: #9fa5c9;
+            margin-top: 10px;
+            opacity: 0.6;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            14% { transform: scale(1.1); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.1); }
+            70% { transform: scale(1); }
+        }
+        
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- GAME UTAMA -->
+    <div class="game-wrapper" id="gameWrapper">
+        <div class="game-container">
+            <h1 id="mainTitle">Game Wordle</h1>
+            <p>Mencari kata rahasia, masukan jawaban dan tekan Enter.</p>
+            <P>SOAL : Hewan apa yang kakinya 4?</P>
+            <div class="board" id="board"></div>
+            
+            <div class="message-area" id="message">
+                Kira-kira apa yaa?
+            </div>
+
+            <!-- Keyboard utama -->
+            <div class="keyboard" id="keyboard">
+                <div class="key-row">
+                    <button class="key" data-key="Q">Q</button>
+                    <button class="key" data-key="W">W</button>
+                    <button class="key" data-key="E">E</button>
+                    <button class="key" data-key="R">R</button>
+                    <button class="key" data-key="T">T</button>
+                    <button class="key" data-key="Y">Y</button>
+                    <button class="key" data-key="U">U</button>
+                    <button class="key" data-key="I">I</button>
+                    <button class="key" data-key="O">O</button>
+                    <button class="key" data-key="P">P</button>
+                </div>
+                <div class="key-row">
+                    <button class="key" data-key="A">A</button>
+                    <button class="key" data-key="S">S</button>
+                    <button class="key" data-key="D">D</button>
+                    <button class="key" data-key="F">F</button>
+                    <button class="key" data-key="G">G</button>
+                    <button class="key" data-key="H">H</button>
+                    <button class="key" data-key="J">J</button>
+                    <button class="key" data-key="K">K</button>
+                    <button class="key" data-key="L">L</button>
+                </div>
+                <div class="key-row">
+                    <button class="key special" data-key="ENTER">ENTER</button>
+                    <button class="key" data-key="Z">Z</button>
+                    <button class="key" data-key="X">X</button>
+                    <button class="key" data-key="C">C</button>
+                    <button class="key" data-key="V">V</button>
+                    <button class="key" data-key="B">B</button>
+                    <button class="key" data-key="N">N</button>
+                    <button class="key" data-key="M">M</button>
+                    <button class="key special" data-key="DEL">DEL</button>
+                </div>
+            </div>
+
+            <button class="new-game-btn" id="newGameBtn">Ulang</button>
+            
+            <!-- TOMBOL LANJUT -->
+            <div id="lanjutButtonContainer" class="lanjut-btn-container hidden">
+                <button id="lanjutBtn" class="lanjut-btn">💌 LANJUT SAYANGG 💌</button>
+            </div>
+        </div>
+        <footer>teruslah mencoba...</footer>
+    </div>
+
+    <!-- SURAT CINTA -->
+    <div class="letter-container" id="letterContainer">
+        <div class="letter" id="letter">
+            <h2>💌 Happy Valentine Sayanggg 💌</h2>
+            <p id="letterMessage">Maaf belum bisa ngerayain langsung, tapi nanti pas balik kita langsung rayain yaa.... :)</p>
+            <button class="letter-enter-btn" id="letterEnterBtn">💕NEXT💕</button>
+        </div>
+    </div>
+
+    <!-- MINI WORDLE -->
+    <div class="mini-wordle-container hidden" id="miniWordleContainer">
+        <h1 style="color: #ffb7c5; margin-bottom: 15px; font-size: 32px; text-shadow: 0 0 8px #ff4d6d, 0 0 15px #ff1e4d;">💕 JAWAB DENGAN JUJUR 💕</h1>
+        <p style="font-size: 22px; margin-bottom: 15px;">Kamu sayangg aku gaa???</p>
+        
+        <div class="mini-board" id="miniBoard">
+            <div class="mini-tile" id="miniTile0"></div>
+            <div class="mini-tile" id="miniTile1"></div>
+            <div class="mini-tile" id="miniTile2"></div>
+        </div>
+        
+        <div class="message-mini" id="miniMessage">Masa ga tau jawabanya...hmmp</div>
+        
+        <div class="mini-keyboard" id="miniKeyboard">
+            <button class="mini-key" data-mini-key="I">I</button>
+            <button class="mini-key" data-mini-key="K">K</button>
+            <button class="mini-key" data-mini-key="A">A</button>
+            <button class="mini-key" data-mini-key="T">T</button>
+            <button class="mini-key" data-mini-key="D">D</button>
+            <button class="mini-key" data-mini-key="Y">Y</button>
+            
+            <button class="mini-key" data-mini-key="DEL" style="min-width: 110px; font-size: 20px;">⌫ HAPUS</button>
+            <button class="mini-key" data-mini-key="ENTER" style="min-width: 110px; background: #d45c6c; font-size: 20px;">↵ JAWAB</button>
+        </div>
+        
+        <div style="margin-top: 15px; color: #cfa5b0; font-size: 18px;" id="hintMessage"></div>
+    </div>
+
+    <!-- PESAN SINGKAT -->
+    <div class="short-message-container hidden" id="shortMessageContainer">
+        <div class="short-message">I LOVE YOU TOO SAYANGG 💕</div>
+        <div class="redirect-message">Coba tunggu ada sesuatu</div>
+    </div>
+
+    <script>
+        (function() {
+            // KONSTANTA
+            const MAX_ATTEMPTS = 6;
+            const REQUIRED_PLAYS = 3; // HARUS MAIN 3 KALI SEBELUM RAHASIA MUNCUL (DIAM-DIAM)
+            
+            // DAFTAR PESAN LUCU UNTUK SETIAP KESALAHAN
+            const FUNNY_MESSAGES = [
+                "apa hayoo!",
+                "ihh salah!",
+                "ayo coba lagii!",
+                "sedikit lagii!",
+                "tebak terus!"
+            ];
+            
+            // STATE VARIABLES
+            let currentRow = 0;
+            let currentCol = 0;
+            let gameOver = false;
+            let boardState = [];
+            let boardStatus = [];
+            let secretRevealed = false;
+            let gamePlayCount = 0; // Menghitung berapa kali pemain sudah kalah/main (TIDAK DITAMPILKAN)
+            
+            // MINI GAME VARIABLES
+            let miniBoardState = ['', '', ''];
+            let miniCurrentCol = 0;
+            let miniGameActive = true;
+            let hintGiven = false;
+            
+            // FLAGS
+            window.lanjutButtonActive = false;
+            window.letterActive = false;
+            window.miniGameCompleted = false;
+            
+            // INISIALISASI BOARD
+            function initBoard() {
+                boardState = [];
+                boardStatus = [];
+                for (let r = 0; r < MAX_ATTEMPTS; r++) {
+                    boardState[r] = Array(5).fill('');
+                    boardStatus[r] = Array(5).fill('');
+                }
+            }
+            initBoard();
+            
+            // RENDER BOARD UTAMA
+            function renderBoard() {
+                const boardEl = document.getElementById('board');
+                boardEl.innerHTML = '';
+                
+                for (let r = 0; r < MAX_ATTEMPTS; r++) {
+                    const rowDiv = document.createElement('div');
+                    rowDiv.className = 'row';
+                    
+                    const colCount = boardState[r] ? boardState[r].length : 5;
+                    
+                    for (let c = 0; c < colCount; c++) {
+                        const tile = document.createElement('div');
+                        tile.className = 'tile';
+                        
+                        if (boardState[r] && boardState[r][c] !== '') {
+                            tile.classList.add('filled');
+                            tile.textContent = boardState[r][c];
+                        }
+                        
+                        if (boardStatus[r] && boardStatus[r][c] === 'gray') tile.classList.add('gray');
+                        if (boardStatus[r] && boardStatus[r][c] === 'yellow') tile.classList.add('yellow');
+                        if (boardStatus[r] && boardStatus[r][c] === 'green') tile.classList.add('green');
+                        if (boardStatus[r] && boardStatus[r][c] === 'pink') tile.classList.add('pink');
+                        
+                        rowDiv.appendChild(tile);
+                    }
+                    boardEl.appendChild(rowDiv);
+                }
+            }
+            
+            // SET PESAN - FUNGSI BARU UNTUK PESAN ACAK
+            function setRandomFunnyMessage() {
+                const randomIndex = Math.floor(Math.random() * FUNNY_MESSAGES.length);
+                const randomMessage = FUNNY_MESSAGES[randomIndex];
+                const msgEl = document.getElementById('message');
+                msgEl.textContent = randomMessage;
+                msgEl.style.color = '#ffdbdb';
+                
+                // Tambah animasi kecil
+                msgEl.style.animation = 'none';
+                msgEl.offsetHeight; // Trigger reflow
+                msgEl.style.animation = 'messagePop 0.3s ease';
+            }
+            
+            // SET PESAN ERROR
+            function setErrorMessage(msg) {
+                const msgEl = document.getElementById('message');
+                msgEl.textContent = msg;
+                msgEl.style.color = '#ff9999';
+                msgEl.style.animation = 'none';
+                msgEl.offsetHeight;
+                msgEl.style.animation = 'messagePop 0.3s ease';
+            }
+            
+            // VALIDASI KATA
+            function isValidWord(word) {
+                return word.length === 5 && /^[A-Z]+$/.test(word);
+            }
+            
+            // EVALUASI TEBAKAN (RANDOM)
+            function evaluateGuess(guess, rowIndex) {
+                for (let c = 0; c < 5; c++) {
+                    boardState[rowIndex][c] = guess[c];
+                }
+                
+                for (let i = 0; i < 5; i++) {
+                    const rand = Math.random();
+                    if (rand < 0.7) {
+                        boardStatus[rowIndex][i] = 'gray';
+                    } else if (rand < 0.9) {
+                        boardStatus[rowIndex][i] = 'yellow';
+                    } else {
+                        boardStatus[rowIndex][i] = 'green';
+                    }
+                }
+            }
+            
+            // CREATE HEART RAIN
+            function createHeartRain() {
+                const body = document.body;
+                body.classList.add('heart-rain');
+                
+                for (let i = 0; i < 100; i++) {
+                    setTimeout(() => {
+                        const heart = document.createElement('div');
+                        heart.className = 'heart';
+                        heart.innerHTML = ['❤️', '💖', '💗', '💓', '💕', '💘', '💝'][Math.floor(Math.random() * 7)];
+                        heart.style.left = Math.random() * 100 + '%';
+                        heart.style.top = '100%';
+                        heart.style.fontSize = (Math.random() * 25 + 12) + 'px';
+                        heart.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                        document.body.appendChild(heart);
+                        
+                        setTimeout(() => {
+                            heart.remove();
+                        }, 4000);
+                    }, i * 20);
+                }
+            }
+            
+            // REVEAL SECRET (I LOVE YOU)
+            function revealSecret() {
+                if (secretRevealed) return;
+                secretRevealed = true;
+                gameOver = true;
+                
+                // Ubah tema menjadi pink
+                document.body.classList.add('pink-theme');
+                document.querySelector('h1').classList.add('pink-text');
+                document.getElementById('newGameBtn').classList.add('pink-btn');
+                
+                const lastRow = MAX_ATTEMPTS - 1;
+                const boardEl = document.getElementById('board');
+                const rowDiv = boardEl.children[lastRow];
+                
+                // Hapus isi baris terakhir
+                rowDiv.innerHTML = '';
+                
+                const fullSecret = ['I', 'L', 'O', 'V', 'E', 'Y', 'O', 'U'];
+                
+                for (let i = 0; i < 8; i++) {
+                    const tile = document.createElement('div');
+                    tile.className = 'tile';
+                    rowDiv.appendChild(tile);
+                }
+                
+                let currentIndex = 0;
+                const typeInterval = setInterval(() => {
+                    if (currentIndex < fullSecret.length) {
+                        const tiles = rowDiv.children;
+                        const tile = tiles[currentIndex];
+                        
+                        if (!boardState[lastRow]) boardState[lastRow] = [];
+                        if (!boardStatus[lastRow]) boardStatus[lastRow] = [];
+                        
+                        boardState[lastRow][currentIndex] = fullSecret[currentIndex];
+                        boardStatus[lastRow][currentIndex] = 'pink';
+                        
+                        tile.textContent = fullSecret[currentIndex];
+                        tile.classList.add('filled');
+                        tile.classList.add('pink');
+                        tile.style.animation = 'popIn 0.3s ease';
+                        
+                        setTimeout(() => {
+                            tile.style.animation = '';
+                        }, 300);
+                        
+                        currentIndex++;
+                    } else {
+                        clearInterval(typeInterval);
+                        
+                        const lanjutContainer = document.getElementById('lanjutButtonContainer');
+                        lanjutContainer.classList.remove('hidden');
+                        
+                        const lanjutBtn = document.getElementById('lanjutBtn');
+                        lanjutBtn.classList.add('pink-theme-btn');
+                        
+                        window.lanjutButtonActive = true;
+                    }
+                }, 200);
+                
+                // Pesan spesial saat rahasia muncul
+                const msgEl = document.getElementById('message');
+                msgEl.textContent = '💗💗 RAHASIA TERUNGKAP: I LOVE YOU SAYANGGG 💗💗';
+                msgEl.style.color = '#ffb7c5';
+                
+                document.getElementById('keyboard').style.opacity = '0.5';
+                document.getElementById('keyboard').style.pointerEvents = 'none';
+                document.getElementById('newGameBtn').style.display = 'none';
+                
+                createHeartRain();
+            }
+            
+            // SETUP TOMBOL LANJUT
+            function setupLanjutButton() {
+                const lanjutBtn = document.getElementById('lanjutBtn');
+                if (lanjutBtn) {
+                    lanjutBtn.addEventListener('click', function() {
+                        window.lanjutButtonActive = false;
+                        showLetter();
+                    });
+                }
+            }
+            
+            // SHOW LETTER
+            function showLetter() {
+                document.getElementById('lanjutButtonContainer').classList.add('hidden');
+                
+                const letterContainer = document.getElementById('letterContainer');
+                const letter = document.getElementById('letter');
+                
+                letterContainer.classList.add('show');
+                
+                setTimeout(() => {
+                    letter.classList.add('show');
+                }, 100);
+                
+                window.letterActive = true;
+                
+                const letterEnterBtn = document.getElementById('letterEnterBtn');
+                const newBtn = letterEnterBtn.cloneNode(true);
+                letterEnterBtn.parentNode.replaceChild(newBtn, letterEnterBtn);
+                
+                newBtn.addEventListener('click', function() {
+                    window.letterActive = false;
+                    transitionToMiniWordle();
+                });
+            }
+            
+            // TRANSISI KE MINI WORDLE
+            function transitionToMiniWordle() {
+                document.getElementById('letterContainer').classList.remove('show');
+                document.getElementById('gameWrapper').classList.add('invisible');
+                
+                const miniContainer = document.getElementById('miniWordleContainer');
+                miniContainer.classList.remove('hidden');
+                
+                initMiniGame();
+            }
+            
+            // INIT MINI GAME
+            function initMiniGame() {
+                miniBoardState = ['', '', ''];
+                miniCurrentCol = 0;
+                miniGameActive = true;
+                hintGiven = false;
+                
+                updateMiniBoard();
+                setMiniMessage('Masa ga tau jawabanya...hmmp', false);
+                
+                document.getElementById('hintMessage').innerHTML = '';
+                
+                document.querySelectorAll('.mini-key').forEach(btn => {
+                    btn.classList.remove('yellow-bg');
+                });
+            }
+            
+            // UPDATE MINI BOARD
+            function updateMiniBoard() {
+                for (let i = 0; i < 3; i++) {
+                    const tile = document.getElementById(`miniTile${i}`);
+                    tile.textContent = miniBoardState[i];
+                    if (miniBoardState[i] !== '') {
+                        tile.classList.add('filled');
+                    } else {
+                        tile.classList.remove('filled');
+                    }
+                }
+            }
+            
+            // SET MINI MESSAGE
+            function setMiniMessage(msg, isHint = false) {
+                const msgEl = document.getElementById('miniMessage');
+                msgEl.textContent = msg;
+                msgEl.style.color = isHint ? '#ffd966' : '#ffdbdb';
+            }
+            
+            // HANDLE MINI KEY
+            function handleMiniKey(key) {
+                if (!miniGameActive) return;
+                
+                if (key === 'DEL') {
+                    if (miniCurrentCol > 0) {
+                        miniCurrentCol--;
+                        miniBoardState[miniCurrentCol] = '';
+                        updateMiniBoard();
+                    }
+                } 
+                else if (key === 'ENTER') {
+                    if (miniCurrentCol !== 3) {
+                        setMiniMessage('Harus 3 huruf!', true);
+                        return;
+                    }
+                    
+                    const answer = miniBoardState.join('');
+                    
+                    if (answer === 'IYA') {
+                        setMiniMessage('❤️ I LOVE YOU TOO! ❤️', false);
+                        miniGameActive = false;
+                        window.miniGameCompleted = true;
+                        
+                        setTimeout(() => {
+                            document.getElementById('miniWordleContainer').classList.add('hidden');
+                            showShortMessage();
+                        }, 1500);
+                    } 
+                    else {
+                        if (!hintGiven) {
+                            document.querySelectorAll('.mini-key').forEach(btn => {
+                                const miniKey = btn.dataset.miniKey;
+                                if (miniKey === 'I' || miniKey === 'Y' || miniKey === 'A') {
+                                    btn.classList.add('yellow-bg');
+                                }
+                            });
+                            
+                            setMiniMessage('WOY UDAH GUA KASIH PETUNJUKK!!!!', true);
+                            document.getElementById('hintMessage').innerHTML = '💡 Tombol kuning itu petunjuknya...';
+                            hintGiven = true;
+                            
+                            miniBoardState = ['', '', ''];
+                            miniCurrentCol = 0;
+                            updateMiniBoard();
+                        } else {
+                            setMiniMessage('masih salah sayang... coba "I Y A"', true);
+                            
+                            miniBoardState = ['', '', ''];
+                            miniCurrentCol = 0;
+                            updateMiniBoard();
+                        }
+                    }
+                }
+                else {
+                    if (miniCurrentCol < 3) {
+                        if (['I', 'K', 'A', 'T', 'D', 'Y'].includes(key)) {
+                            miniBoardState[miniCurrentCol] = key;
+                            miniCurrentCol++;
+                            updateMiniBoard();
+                        }
+                    }
+                }
+            }
+            
+            // SHORT MESSAGE
+            function showShortMessage() {
+                const shortContainer = document.getElementById('shortMessageContainer');
+                shortContainer.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    window.location.href = 'cerita.html';
+                }, 10000);
+            }
+            
+            // HANDLE KEY UTAMA
+            function handleKey(key) {
+                if (gameOver) return;
+                if (currentRow >= MAX_ATTEMPTS) return;
+                
+                if (key.length === 1 && key >= 'A' && key <= 'Z') {
+                    if (currentCol < 5) {
+                        boardState[currentRow][currentCol] = key;
+                        currentCol++;
+                        renderBoard();
+                    }
+                }
+                else if (key === 'DEL') {
+                    if (currentCol > 0) {
+                        currentCol--;
+                        boardState[currentRow][currentCol] = '';
+                        renderBoard();
+                    }
+                }
+                else if (key === 'ENTER') {
+                    if (currentCol !== 5) {
+                        setErrorMessage('Harus 5 huruf!');
+                        return;
+                    }
+                    
+                    const guessWord = boardState[currentRow].join('');
+                    
+                    if (!isValidWord(guessWord)) {
+                        setErrorMessage('Hanya huruf!');
+                        return;
+                    }
+                    
+                    evaluateGuess(guessWord, currentRow);
+                    renderBoard();
+                    
+                    currentRow++;
+                    currentCol = 0;
+                    
+                    if (currentRow >= MAX_ATTEMPTS) {
+                        gameOver = true;
+                        gamePlayCount++;
+                        
+                        if (gamePlayCount >= REQUIRED_PLAYS) {
+                            // DIAM-DIAM MUNCUL RAHASIA TANPA KASIH TAU KALO INI PERCOBAAN KE-3
+                            setErrorMessage('💔 Kamu kalah... Tapi tunggu... ada sesuatu 💔');
+                            setTimeout(() => {
+                                revealSecret();
+                            }, 1500);
+                        } else {
+                            setErrorMessage('💔 Kamu kalah... Coba lagi! 💔');
+                            document.getElementById('newGameBtn').style.display = 'block';
+                        }
+                    } else {
+                        // SETIAP KALI SELESAI SATU ROW (TEPAT/TIDAK), TAMPILKAN PESAN ACAK LUCU
+                        setRandomFunnyMessage();
+                    }
+                }
+            }
+            
+            // RESET GAME
+            function resetGame() {
+                currentRow = 0;
+                currentCol = 0;
+                gameOver = false;
+                
+                boardState = [];
+                boardStatus = [];
+                for (let r = 0; r < MAX_ATTEMPTS; r++) {
+                    boardState[r] = Array(5).fill('');
+                    boardStatus[r] = Array(5).fill('');
+                }
+                
+                renderBoard();
+                
+                // Pesan awal
+                const msgEl = document.getElementById('message');
+                msgEl.textContent = 'kira-kira apa yaa?';
+                msgEl.style.color = '#ffdbdb';
+                
+                document.getElementById('keyboard').style.opacity = '1';
+                document.getElementById('keyboard').style.pointerEvents = 'auto';
+                document.getElementById('newGameBtn').style.display = 'block';
+            }
+            
+            // EVENT LISTENER KEYBOARD
+            document.addEventListener('keydown', (e) => {
+                // Mini Wordle
+                if (!document.getElementById('miniWordleContainer').classList.contains('hidden')) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (miniGameActive) {
+                            handleMiniKey('ENTER');
+                        }
+                    } else if (e.key === 'Backspace') {
+                        e.preventDefault();
+                        handleMiniKey('DEL');
+                    } else {
+                        const key = e.key.toUpperCase();
+                        if (['I', 'K', 'A', 'T', 'D', 'Y'].includes(key)) {
+                            e.preventDefault();
+                            handleMiniKey(key);
+                        }
+                    }
+                    return;
+                }
+                
+                // Surat aktif
+                if (window.letterActive && e.key === 'Enter') {
+                    e.preventDefault();
+                    const nextBtn = document.getElementById('letterEnterBtn');
+                    if (nextBtn && !document.getElementById('letterContainer').classList.contains('hidden')) {
+                        window.letterActive = false;
+                        transitionToMiniWordle();
+                    }
+                    return;
+                }
+                
+                // Tombol lanjut aktif
+                if (window.lanjutButtonActive && e.key === 'Enter') {
+                    e.preventDefault();
+                    const lanjutBtn = document.getElementById('lanjutBtn');
+                    if (lanjutBtn && !document.getElementById('lanjutButtonContainer').classList.contains('hidden')) {
+                        window.lanjutButtonActive = false;
+                        showLetter();
+                    }
+                    return;
+                }
+                
+                // Game utama
+                if (e.key === 'Enter') {
+                    handleKey('ENTER');
+                    e.preventDefault();
+                } else if (e.key === 'Backspace') {
+                    handleKey('DEL');
+                    e.preventDefault();
+                } else {
+                    const key = e.key.toUpperCase();
+                    if (key.length === 1 && key >= 'A' && key <= 'Z') {
+                        handleKey(key);
+                    }
+                }
+            });
+            
+            // SETUP EVENT CLICK
+            function setupEvents() {
+                document.querySelectorAll('.key').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const key = btn.dataset.key;
+                        handleKey(key);
+                    });
+                });
+                
+                document.querySelectorAll('.mini-key').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const key = btn.dataset.miniKey;
+                        handleMiniKey(key);
+                    });
+                });
+                
+                document.getElementById('newGameBtn').addEventListener('click', () => {
+                    resetGame();
+                });
+                
+                setupLanjutButton();
+            }
+            
+            // INISIALISASI
+            renderBoard();
+            setupEvents();
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Pantai · Gambar Lebar · Ombak & Pasir</title>
+    <!-- Font & icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            /* gradien laut-pantai dramatis */
+            background: linear-gradient(145deg, #0a3a4a, #1b5e6b, #2c7a7f, #f0d9b0, #d4b68a);
+            background-size: 500% 500%;
+            animation: ombakBergulung 22s ease infinite;
+            font-family: 'Quicksand', sans-serif;
+            min-height: 100vh;
+            padding: 3rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* animasi ombak gradien */
+        @keyframes ombakBergulung {
+            0% { background-position: 0% 0%; }
+            25% { background-position: 40% 60%; }
+            50% { background-position: 100% 90%; }
+            75% { background-position: 60% 30%; }
+            100% { background-position: 0% 0%; }
+        }
+
+        /* lapisan buih/kilauan air */
+        body::before {
+            content: "";
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 40%, rgba(255, 255, 240, 0.35) 0%, transparent 35%),
+                        radial-gradient(circle at 80% 70%, rgba(170, 230, 240, 0.4) 0%, transparent 40%),
+                        radial-gradient(circle at 10% 80%, rgba(250, 240, 200, 0.5) 0%, transparent 45%),
+                        radial-gradient(circle at 90% 20%, rgba(130, 210, 230, 0.4) 0%, transparent 50%);
+            animation: kilauLaut 24s infinite alternate;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes kilauLaut {
+            0% { transform: rotate(0deg) scale(1); opacity: 0.4; }
+            50% { transform: rotate(5deg) scale(1.1); opacity: 0.8; }
+            100% { transform: rotate(-5deg) scale(1.2); opacity: 0.5; }
+        }
+
+        /* partikel pasir beterbangan */
+        .particle {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: #f5e6d3;
+            border-radius: 50%;
+            filter: blur(2px);
+            opacity: 0.4;
+            animation: apung 18s infinite linear;
+            z-index: 1;
+        }
+
+        @keyframes apung {
+            0% { transform: translateY(100vh) translateX(0) scale(0.8); opacity: 0; }
+            20% { opacity: 0.6; }
+            80% { opacity: 0.6; }
+            100% { transform: translateY(-20vh) translateX(30px) scale(1.5); opacity: 0; }
+        }
+
+        /* partikel pasir - 10 butir */
+        .particle:nth-child(1) { left: 10%; animation-duration: 14s; animation-delay: 0s; }
+        .particle:nth-child(2) { left: 25%; animation-duration: 19s; animation-delay: 2s; width: 12px; height: 12px; background: #ffe9cf; }
+        .particle:nth-child(3) { left: 40%; animation-duration: 16s; animation-delay: 4s; }
+        .particle:nth-child(4) { left: 55%; animation-duration: 22s; animation-delay: 1s; width: 6px; height: 6px; }
+        .particle:nth-child(5) { left: 70%; animation-duration: 17s; animation-delay: 7s; background: #ffdbb5; }
+        .particle:nth-child(6) { left: 85%; animation-duration: 20s; animation-delay: 3s; width: 10px; height: 10px; }
+        .particle:nth-child(7) { left: 15%; animation-duration: 25s; animation-delay: 9s; }
+        .particle:nth-child(8) { left: 45%; animation-duration: 13s; animation-delay: 5s; background: #efd3b0; }
+        .particle:nth-child(9) { left: 65%; animation-duration: 21s; animation-delay: 11s; }
+        .particle:nth-child(10) { left: 90%; animation-duration: 18s; animation-delay: 0s; width: 14px; height: 14px; }
+
+        /* header tema pantai */
+        .page-header {
+            text-align: center;
+            margin-bottom: 3.5rem;
+            width: 100%;
+            max-width: 1100px;
+            position: relative;
+            z-index: 10;
+            background: rgba(10, 60, 70, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 80px;
+            padding: 1.5rem 2rem;
+            border: 2px solid rgba(255, 255, 245, 0.6);
+            box-shadow: 0 15px 30px rgba(0, 40, 50, 0.3);
+        }
+
+        .page-header h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(145deg, #fef9e6, #c0e0ff, #a6d0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 6px 6px 16px #024d5c;
+            letter-spacing: -0.01em;
+        }
+
+        .page-header p {
+            font-size: 1.4rem;
+            color: #fff9e6;
+            text-shadow: 2px 2px 4px #0a4c5c;
+            display: inline-block;
+            padding: 0.5rem 2rem;
+            border-radius: 60px;
+            background: rgba(10, 70, 80, 0.6);
+            backdrop-filter: blur(4px);
+            margin-top: 0.8rem;
+            font-weight: 600;
+            border: 1px solid #b3e4f0;
+        }
+
+        /* container card utama */
+        .cards-container {
+            max-width: 1200px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 2.8rem;
+            position: relative;
+            z-index: 15;
+        }
+
+        /* setiap card: flex row, dibalik untuk genap */
+        .card-row {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            background: rgba(30, 45, 50, 0.75);  /* Dibuat lebih gelap */
+            backdrop-filter: blur(16px);
+            border-radius: 60px;
+            padding: 1.8rem 2.5rem;
+            border: 3px solid rgba(255, 230, 190, 0.8);
+            box-shadow: 0 30px 40px -16px #023b44, 0 8px 20px rgba(0, 20, 10, 0.3);
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+            animation: naikTurun 5s infinite alternate ease-in-out;
+            transform-origin: center;
+        }
+
+        /* animasi terapung seperti kapal */
+        @keyframes naikTurun {
+            0% { transform: translateY(0px) rotate(0deg); }
+            100% { transform: translateY(-10px) rotate(0.3deg); }
+        }
+
+        /* timing berbeda tiap card */
+        .card-row:nth-child(1) { animation-delay: 0s; animation-duration: 4.2s; }
+        .card-row:nth-child(2) { animation-delay: 0.6s; animation-duration: 5s; }
+        .card-row:nth-child(3) { animation-delay: 1.2s; animation-duration: 4.8s; }
+        .card-row:nth-child(4) { animation-delay: 0.2s; animation-duration: 5.5s; }
+        .card-row:nth-child(5) { animation-delay: 1.5s; animation-duration: 4s; }
+        .card-row:nth-child(6) { animation-delay: 0.9s; animation-duration: 5.2s; }
+
+        .card-row:hover {
+            background: rgba(40, 60, 70, 0.85);
+            border-color: #fff2c0;
+            box-shadow: 0 35px 50px -18px #01313a, 0 10px 30px rgba(0, 0, 0, 0.4);
+            transform: scale(1.02) translateY(-6px);
+            animation-play-state: paused;
+        }
+
+        /* untuk nomor genap: balik urutan (gambar di kanan, teks di kiri) */
+        .card-row.even {
+            flex-direction: row-reverse;
+        }
+
+        /* ===== AREA GAMBAR DIPERLEBAR ===== */
+        .gambar {
+            width: 300px;        /* Lebih lebar dari sebelumnya (200px) */
+            height: 240px;       /* Tinggi proporsional */
+            background: #bfd9db;
+            background-image: radial-gradient(circle at 20% 30%, rgba(255, 255, 245, 0.9) 5%, transparent 20%),
+                                repeating-linear-gradient(45deg, rgba(30, 110, 130, 0.4) 0px, rgba(30, 110, 130, 0.4) 12px,
+                                rgba(250, 235, 190, 0.3) 12px, rgba(250, 235, 190, 0.3) 24px);
+            border-radius: 40% 60% 30% 70% / 50% 40% 60% 50%;
+            border: 6px solid #faf0d7;
+            box-shadow: 0 0 0 8px rgba(255, 240, 200, 0.5) inset, 0 25px 35px -12px #02262e, 0 0 20px #a3f0ff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #03505c;
+            transition: all 0.6s cubic-bezier(0.3, 1, 0.5, 1.2);
+            animation: ombakCard 3.8s infinite alternate ease-in-out, apungCard 7s infinite;
+            padding: 1.2rem;
+            backdrop-filter: blur(2px);
+        }
+
+        /* animasi bergelombang untuk card gambar */
+        @keyframes ombakCard {
+            0% { border-radius: 40% 60% 30% 70% / 50% 40% 60% 50%; border-color: #faf0d7; box-shadow: 0 0 0 8px rgba(255, 240, 200, 0.5) inset, 0 25px 35px -12px #02262e; }
+            50% { border-radius: 60% 40% 70% 30% / 40% 60% 40% 60%; border-color: #ffeab5; box-shadow: 0 0 0 12px #ffeacb inset, 0 28px 40px -10px #013d47; }
+            100% { border-radius: 35% 65% 45% 55% / 55% 35% 65% 45%; border-color: #fff2cf; box-shadow: 0 0 0 8px rgba(255, 240, 200, 0.5) inset, 0 25px 35px -12px #02262e; }
+        }
+
+        @keyframes apungCard {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-5px) rotate(1deg); }
+            100% { transform: translateY(0) rotate(-1deg); }
+        }
+
+        /* tiap gambar punya delay berbeda */
+        .gambar-1 {
+            animation-delay: 0s, 0s;
+            background-image: url(img/1.jpg);
+            background-size: cover;
+        }
+        .gambar-2 {
+            animation-delay: 0.4s, 0.7s;
+        background-image: url(img/2.jpg);
+        background-size: cover;
+        }
+        .gambar-3 {
+            animation-delay: 0.8s, 1.4s;
+            background-image: url(img/3.jpg);
+            background-size: cover;
+        }
+        .gambar-4 {
+            animation-delay: 1.2s, 2.1s;
+            background-image: url(img/4.jpg);
+            background-size: cover;
+        }
+        .gambar-5 {
+            animation-delay: 1.6s, 2.8s;
+            background-image: url(img/5.jpg);
+            background-size: cover;
+        }
+        .gambar-6 {
+            animation-delay: 2.0s, 3.5s;
+            background-image: url(img/6.jpg);
+            background-size: cover;
+        }
+
+        .gambar i {
+            font-size: 4.5rem;   /* Ikon lebih besar proporsional */
+            color: #025f6e;
+            margin-bottom: 0.8rem;
+            filter: drop-shadow(0 0 8px #b3eaf5);
+            animation: ikanBerenang 5s infinite alternate;
+        }
+
+        @keyframes ikanBerenang {
+            0% { transform: translateX(0) rotate(-2deg); }
+            100% { transform: translateX(5px) rotate(2deg); }
+        }
+
+        .gambar .empty-label {
+            font-weight: 700;
+            font-size: 1.6rem;   /* Label lebih besar */
+            background: rgba(255, 250, 210, 0.8);
+            padding: 0.3rem 1.5rem;
+            border-radius: 60px;
+            border: 3px solid #0b6f7a;
+            color: #01434e;
+            backdrop-filter: blur(2px);
+            box-shadow: 0 0 15px #9fd9e6;
+        }
+
+        /* pesan samping (teks deskripsi) tema laut */
+        .caption {
+            flex: 1;
+            background: rgba(100, 120, 110, 0.7);  /* Background lebih gelap */
+            backdrop-filter: blur(12px);
+            padding: 2rem 2.5rem;
+            border-radius: 50px;
+            border-left: 10px solid #ffd98c;  /* Warna pasir lebih terang */
+            font-size: 1.35rem;
+            line-height: 1.7;
+            color: #f5efe0;  /* Warna teks utama lebih terang */
+            box-shadow: inset 0 2px 20px rgba(255, 245, 200, 0.3), 0 10px 20px rgba(0, 70, 80, 0.4);
+            font-weight: 500;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .caption i {
+            color: #ffd966;  /* Warna ikon pasir emas */
+            margin-right: 0.8rem;
+            font-size: 2rem;
+            vertical-align: middle;
+            filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3));
+        }
+
+        .caption strong {
+            color: #FFE68F;  /* Warna pasir cerah (Khaki) */
+            font-size: 1.8rem;
+            background: linear-gradient(145deg, #F4C542, #DEB887, #F4A460);  /* Gradasi warna pasir */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);  /* Shadow lebih gelap untuk kontras */
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .caption small {
+            display: block;
+            margin-top: 1rem;
+            color: #FFE4B5;  /* Warna pasir lebih muda (Moccasin) */
+            font-size: 1.2rem;
+            font-style: italic;
+            border-top: 2px dashed #F4A460;  /* Warna pasir kecoklatan */
+            padding-top: 0.8rem;
+            font-weight: 600;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        /* untuk genap: border kiri pindah ke kanan */
+        .card-row.even .caption {
+            border-left: none;
+            border-right: 10px solid #ffd98c;
+            text-align: right;
+        }
+
+        /* responsive: pada layar kecil, gambar tetap lebar tapi ditumpuk */
+        @media (max-width: 900px) {
+            .card-row, .card-row.even {
+                flex-direction: column;
+                text-align: center;
+                padding: 1.8rem;
+            }
+            .card-row.even .caption {
+                border-right: none;
+                border-left: 10px solid #ffd98c;
+                text-align: left;
+            }
+            .gambar {
+                width: 90%;
+                max-width: 400px;
+                height: auto;
+                min-height: 260px;
+            }
+        }
+
+        /* footer tema pantai */
+        .footer-note {
+            margin-top: 4.5rem;
+            color: #feffe6;
+            background: rgba(10, 60, 70, 0.7);
+            backdrop-filter: blur(12px);
+            padding: 1rem 2.5rem;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1.3rem;
+            border: 2px solid #ffd98c;
+            box-shadow: 0 0 30px #9fd0db;
+            z-index: 20;
+            text-align: center;
+        }
+
+        .footer-note i {
+            margin: 0 0.7rem;
+            color: #ffecb3;
+        }
+
+        /* kerang-kerangan hiasan */
+        .shell {
+            position: fixed;
+            font-size: 3rem;
+            bottom: 10px;
+            left: 20px;
+            opacity: 0.2;
+            transform: rotate(15deg);
+            z-index: 0;
+            animation: goyang 8s infinite;
+        }
+        .shell2 {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            font-size: 4rem;
+            opacity: 0.15;
+            transform: rotate(-10deg);
+            animation: goyang 12s infinite reverse;
+        }
+        @keyframes goyang {
+            0% { transform: rotate(10deg) scale(1); }
+            50% { transform: rotate(20deg) scale(1.1); }
+            100% { transform: rotate(10deg) scale(1); }
+        }
+
+        /* ===== SURAT KELUAR DARI AMPOP ===== */
+        .envelope-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 3rem auto 2rem;
+            position: relative;
+            z-index: 30;
+            display: flex;
+            justify-content: center;
+        }
+
+        .envelope {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            background: #f9e5c1;
+            border-radius: 20px 20px 15px 15px;
+            padding: 2rem 2.5rem 2.5rem;
+            box-shadow: 0 30px 30px -15px rgba(0, 0, 0, 0.4), inset 0 -5px 10px rgba(0, 0, 0, 0.1);
+            border: 2px solid #d4a373;
+            transform: perspective(800px) rotateX(2deg);
+            transition: transform 0.3s ease;
+        }
+
+        .envelope:hover {
+            transform: perspective(800px) rotateX(0deg) translateY(-5px);
+        }
+
+        /* amplop bagian belakang (flap) */
+        .envelope::before {
+            content: "";
+            position: absolute;
+            top: -20px;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            background: #f1d5a9;
+            border-radius: 30px 30px 0 0;
+            border-bottom: 2px solid #c38e6b;
+            transform: perspective(400px) rotateX(10deg);
+            box-shadow: 0 -5px 8px rgba(0, 0, 0, 0.1);
+            z-index: 5;
+        }
+
+        /* surat yang keluar dari amplop */
+        .letter {
+            background: #fff9f0;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), inset 0 0 0 1px #f0dbb4;
+            transform: translateY(10px) rotate(0.5deg);
+            transition: transform 0.4s ease;
+            border: 1px solid #e5c9a8;
+            position: relative;
+            z-index: 10;
+            font-family: 'Quicksand', sans-serif;
+            color: #3a2c1f;
+        }
+
+        .envelope:hover .letter {
+            transform: translateY(0px) rotate(0deg);
+        }
+
+        /* lipatan amplop (segel) */
+        .envelope::after {
+            content: "❤️";
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%) rotate(10deg);
+            font-size: 2rem;
+            background: #dbaa7a;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffe6b0;
+            border: 2px solid #b57c56;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 15;
+            font-size: 1.8rem;
+        }
+
+        .letter-content {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            text-align: center;
+        }
+
+        .letter-content p {
+            margin: 1rem 0;
+        }
+
+        .letter-content .greeting {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #b1560f;
+        }
+
+        .letter-content .signature {
+            margin-top: 1.5rem;
+            font-style: italic;
+            color: #8b5a2b;
+        }
+
+        .letter-decoration {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
+            color: #c9865e;
+            font-size: 1.5rem;
+        }
+
+        
+    </style>
+</head>
+<body>
+    <!-- Musik BGM dengan kontrol floating -->
+<div style="
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: rgba(255, 250, 240, 0.8);
+    backdrop-filter: blur(12px);
+    padding: 15px 25px;
+    border-radius: 60px;
+    border: 2px solid #ffecb3;
+    box-shadow: 0 10px 25px rgba(0, 60, 70, 0.4);
+    z-index: 1000;
+    font-family: 'Quicksand', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+">
+    <i class="fa-brands fa-itunes-note" style="color: #025f6e; font-size: 1.5rem;"></i>
+    <audio id="bgmPantai" loop>
+        <source src="audio/AMAZING  Rex Orange County (Lofi Remix).mp3" type="audio/mpeg">
+
+    </audio>
+    
+    <button onclick="document.getElementById('bgmPantai').play()" style="
+        background: #025f6e;
+        color: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1.2rem;
+        align-items: center;
+    "><i class="fa-solid fa-play"></i></button>
+    
+    <button onclick="document.getElementById('bgmPantai').pause()" style="
+        background: #b49178;
+        color: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1.2rem;
+    "><i class="fa-solid fa-pause"></i></button>
+    
+    <input type="range" id="volumePantai" min="0" max="1" step="0.1" value="0.4" 
+        onchange="document.getElementById('bgmPantai').volume = this.value"
+        style="width: 100px; accent-color: #025f6e;">
+</div>
+
+    <!-- partikel pasir -->
+    <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+    <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+
+    <!-- hiasan kerang -->
+    <div class="shell">🐚</div>
+    <div class="shell2">🐠</div>
+
+    <div class="page-header">
+        <h1><i class="fas fa-fish"></i> Haiii Najwaa <i class="fa-solid fa-heart"></i></h1>
+        <p><i class="fas fa-water"></i> Seseorang yang spesial diwaktu yang tak diduga <i class="fas fa-umbrella-beach"></i></p>
+    </div>
+
+    <div class="cards-container">
+        <!-- CARD 1 (ganjil) gambar-1 di kiri - tema pantai dengan gambar lebar -->
+        <div class="card-row">
+            <div class="gambar gambar-1" id="gambar-1">
+                
+            </div>
+            <div class="caption">
+                <i class="fa-solid fa-lock-open"></i> <strong>First Public</strong> — Makan ramen, malah open public wkwkwk.
+                <small> Senang banget liat lu bahagia cerita ini itu waktu itu </small>
+            </div>
+        </div>
+
+        <!-- CARD 2 (genap) gambar-2 di kanan -->
+        <div class="card-row even">
+            <div class="gambar gambar-2" id="gambar-2">
+                
+            </div>
+            <div class="caption">
+                <i class="fa-solid fa-cube"></i> <strong>Main Lego</strong> — Main lego bunga banyak banget sisanya.
+                <small>pertama kali rangkulan, njay gua sangat sok cool padahal salting parah xixi</small>
+            </div>
+        </div>
+
+        <!-- CARD 3 (ganjil) gambar-3 di kiri -->
+        <div class="card-row">
+            <div class="gambar gambar-3" id="gambar-3">
+                
+            </div>
+            <div class="caption">
+                <i class="fa-solid fa-bed"></i><strong>Kenyang Ramen</strong> — Ngasih kejutan ramen yang lu pengen.
+                <small>Habis makan kenyang langsung ngantuk pacar aku</small>
+            </div>
+        </div>
+
+        <!-- CARD 4 (genap) gambar-4 di kanan -->
+        <div class="card-row even">
+            <div class="gambar gambar-4" id="gambar-4">
+            </div>
+            <div class="caption">
+                <i class="fa-solid fa-shrimp"></i> <strong>Makan SeaFood</strong> — Makan seafood mesra banget.
+                <small>Makan bareng yang sederhana sama pacar, suap suapan wkwk</small>
+            </div>
+        </div>
+
+        <!-- CARD 5 (ganjil) gambar-5 di kiri -->
+        <div class="card-row">
+            <div class="gambar gambar-5" id="gambar-5">
+            
+            </div>
+            <div class="caption">
+                <i class="fa-solid fa-shoe-prints"></i> <strong>New Shoe</strong> — Nemenin pacar tercinta beli sepatu.
+                <small>Pengen banget lu pake baju yang kita liat, cuman tipis banget ga bolehh</small>
+            </div>
+        </div>
+
+        <!-- CARD 6 (genap) gambar-6 di kanan -->
+        <div class="card-row even">
+            <div class="gambar gambar-6" id="gambar-6">
+                
+            </div>
+            <div class="caption">
+                <i class="fa-solid fa-gamepad"></i> <strong>TimeZone Date</strong> — Main ke timezone sama kamu
+                <small>Aku menang 2 boneka wkwkw, seruu pengen timezone date lagi</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SURAT KELUAR DARI AMPLOP ===== -->
+    <div class="envelope-container">
+        <div class="envelope">
+            <div class="letter">
+                <div class="letter-content">
+                    <div class="letter-decoration">
+                        <i class="fas fa-star"></i> <i class="fas fa-heart"></i> <i class="fas fa-star"></i>
+                    </div>
+                    <p class="greeting">Untuk Najwa,</p>
+                    <p>Dari ribuan ombak yang berbisik,<br>aku memilih satu yang paling indah, yaitu kamu.</p>
+                    <p>Semoga surat ini sampai di hatimu<br>seperti pasir yang selalu merindukan ombak.</p>
+                    <div class="letter-decoration">
+                        <i class="fas fa-umbrella-beach"></i> <i class="fas fa-ship"></i> <i class="fas fa-fish"></i>
+                    </div>
+                    <p class="signature">Dari seseorang yang selalu memikirkanmu<br>❤️</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-note">
+            <p style="text-align: center; justify-content: center;"><svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M33 16C35.2091 16 37 14.2091 37 12C37 9.79086 35.2091 8 33 8C30.7909 8 29 9.79086 29 12C29 14.2091 30.7909 16 33 16ZM38.307 29.2709C38.8866 31.1591 39.6151 33.1434 40.0692 34.3392C40.2906 34.9219 39.9372 35.5675 39.3241 35.6802C34.786 36.5147 31.6606 36.4934 26.7302 35.6673C26.0989 35.5615 25.7332 34.8923 25.9689 34.2972C26.4402 33.1071 27.1768 31.1642 27.749 29.2772C25.9332 29.0975 24.5 26.9829 24.5 24.4007C24.5 21.7006 26.067 19.5118 28 19.5118L28.0126 19.5117C28.0043 19.4518 28 19.3905 28 19.3283C28 18.5947 28.5947 18 29.3283 18H36.6717C37.4053 18 38 18.5947 38 19.3283C38 19.3905 37.9957 19.4518 37.9874 19.5117H38C39.933 19.5117 41.5 21.7005 41.5 24.4006C41.5 26.9562 40.0962 29.0537 38.307 29.2709ZM29.9625 23.5086C30.3666 22.6074 30.5 21.2493 30.5 19.5001H32.5C32.5 21.2508 32.3834 22.9979 31.7875 24.3269C31.4785 25.0159 31.0248 25.6312 30.3626 26.0674C29.6992 26.5045 28.9042 26.7105 28 26.7105V24.7105C28.5958 24.7105 28.9883 24.5778 29.2624 24.3972C29.5377 24.2158 29.7715 23.9347 29.9625 23.5086ZM35.5 19.5C35.5 21.2492 35.6334 22.6074 36.0375 23.5086C36.2285 23.9347 36.4623 24.2158 36.7376 24.3972C37.0117 24.5777 37.4042 24.7105 38 24.7105V26.7105C37.0958 26.7105 36.3008 26.5044 35.6374 26.0673C34.9752 25.6311 34.5215 25.0159 34.2125 24.3269C33.6166 22.9979 33.5 21.2508 33.5 19.5H35.5Z" fill="currentColor"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M28.5 37.1515V38.4999C28.5 39.2521 29.0571 39.8879 29.8028 39.9868C30.5485 40.0857 31.2521 39.617 31.4482 38.8908L31.8435 37.4263C30.7614 37.3897 29.6624 37.2985 28.5 37.1515ZM35.1411 37.3695L35.5518 38.8908C35.7479 39.617 36.4515 40.0857 37.1972 39.9868C37.9429 39.8879 38.5 39.2521 38.5 38.4999V37C37.3214 37.1739 36.2165 37.2975 35.1411 37.3695Z" fill="currentColor"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M14.445 16C16.6542 16 18.445 14.2091 18.445 12C18.445 9.79086 16.6542 8 14.445 8C12.2359 8 10.445 9.79086 10.445 12C10.445 14.2091 12.2359 16 14.445 16ZM18.1243 39.9961C19.1785 39.9305 20 39.0563 20 38V29.2986C21.9738 28.9982 23.5012 26.9405 23.5012 24.4467C23.5012 21.8777 21.8801 19.7714 19.82 19.5725C19.9335 19.4103 20 19.2129 20 19C20 18.4477 19.5523 18 19 18H11C10.4477 18 10 18.4477 10 19C10 19.213 10.0666 19.4104 10.1801 19.5726C8.12046 19.7722 6.5 21.8781 6.5 24.4467C6.5 26.94 8.0268 28.9974 10 29.2984V38C10 39.0547 10.8191 39.9282 11.8717 39.9959C12.9243 40.0636 13.8485 39.3022 13.9835 38.2561L14.7913 32H15.2345L16.0154 38.2481C16.1465 39.2962 17.07 40.0618 18.1243 39.9961ZM11.5285 23.6689C11.9413 22.8165 12.1059 21.4677 12.1059 19.5571H14.1059C14.1059 21.4761 13.959 23.2388 13.3286 24.5406C13.0001 25.219 12.5281 25.7998 11.863 26.2021C11.2019 26.6019 10.4245 26.7802 9.55611 26.7802V24.7802C10.1511 24.7802 10.5491 24.6594 10.828 24.4907C11.1029 24.3245 11.3355 24.0676 11.5285 23.6689ZM17.6745 19.5571C17.6745 21.4677 17.8391 22.8165 18.2519 23.6689C18.445 24.0676 18.6776 24.3245 18.9524 24.4907C19.2313 24.6594 19.6293 24.7802 20.2243 24.7802V26.7802C19.3559 26.7802 18.5785 26.6019 17.9174 26.2021C17.2523 25.7998 16.7803 25.219 16.4518 24.5406C15.8214 23.2388 15.6745 21.4761 15.6745 19.5571H17.6745Z" fill="currentColor"/>
+</svg>
+    Saling mempertahankan satu sama lain hingga akhir kehidupan
+        
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M18 15C20.2091 15 22 13.2091 22 11C22 8.79086 20.2091 7 18 7C15.7909 7 14 8.79086 14 11C14 13.2091 15.7909 15 18 15Z" fill="currentColor"/>
+<path d="M12.5161 20.9354C12.6775 20.7418 12.8393 20.5632 13 20.3993V38C13 39.0616 13.8294 39.9382 14.8894 39.9969C15.9494 40.0556 16.8706 39.276 16.9878 38.2209L17.7901 31H18.2099L19.0123 38.2209C19.1295 39.276 20.0506 40.0556 21.1106 39.9969C22.1706 39.9382 23 39.0616 23 38L23 24.3603C23.1494 23.5645 23.7113 22.4114 24.5962 21.3282C25.389 22.3029 25.9217 23.3345 26.1285 24.1117C26.1069 25.7631 24.7785 31.9425 24.2316 34.421C24.107 34.9855 24.4844 35.537 25.0572 35.6155C28.75 36.1216 31.9406 36.121 35.6027 35.6554C36.2864 35.5685 36.6851 34.8112 36.4373 34.1681C35.7 32.2554 34.5001 28.2816 34.5001 22.6778L34.5001 19.7516C34.8908 20.0529 35.3004 20.4464 35.7082 20.9354C36.7648 22.2022 37.4209 23.653 37.5068 24.5548C37.5853 25.3795 38.3176 25.9844 39.1423 25.9059C39.9669 25.8273 40.5718 25.0951 40.4933 24.2704C40.3299 22.5543 39.2923 20.5488 38.012 19.0138C36.7678 17.522 34.8932 16 32.7903 16H28.1618C26.879 16 25.6609 16.5152 24.5999 17.2482C23.5426 16.5154 22.3281 16 21.0482 16H15.434C13.3311 16 11.4565 17.522 10.2123 19.0138C8.93198 20.5488 7.89441 22.5543 7.73098 24.2704C7.65245 25.0951 8.25733 25.8273 9.08202 25.9059C9.90672 25.9844 10.6389 25.3795 10.7175 24.5548C10.8034 23.653 11.4594 22.2022 12.5161 20.9354Z" fill="currentColor"/>
+<path d="M6 28.5C6 27.1193 7.11929 26 8.5 26C9.88071 26 11 27.1193 11 28.5V39C11 39.5523 10.5523 40 10 40C9.44772 40 9 39.5523 9 39V28.5C9 28.2239 8.77614 28 8.5 28C8.22386 28 8 28.2239 8 28.5V29.5128C8 30.0651 7.55228 30.5128 7 30.5128C6.44772 30.5128 6 30.0651 6 29.5128V28.5Z" fill="currentColor"/>
+<path d="M30.5001 15C32.7092 15 34.5001 13.2091 34.5001 11C34.5001 8.79086 32.7092 7 30.5001 7C28.291 7 26.5001 8.79086 26.5001 11C26.5001 13.2091 28.291 15 30.5001 15Z" fill="currentColor"/>
+<path d="M39.5001 26C38.1194 26 37.0001 27.1193 37.0001 28.5V29.5128C37.0001 30.0651 37.4478 30.5128 38.0001 30.5128C38.5524 30.5128 39.0001 30.0651 39.0001 29.5128V28.5C39.0001 28.2239 39.224 28 39.5001 28C39.7762 28 40.0001 28.2239 40.0001 28.5V39C40.0001 39.5523 40.4478 40 41.0001 40C41.5524 40 42.0001 39.5523 42.0001 39V28.5C42.0001 27.1193 40.8808 26 39.5001 26Z" fill="currentColor"/>
+<path d="M25.5 39.3877V37.1515C26.75 37.3096 27.9265 37.4031 29.0877 37.4336L28.4471 39.7824C28.2494 40.5074 27.5457 40.9742 26.8009 40.8744C26.0561 40.7747 25.5 40.1392 25.5 39.3877Z" fill="currentColor"/>
+<path d="M32.5529 39.7824L31.899 37.3848C33.0507 37.3157 34.2327 37.187 35.5 37V39.3877C35.5 40.1392 34.9439 40.7747 34.1991 40.8744C33.4543 40.9742 32.7506 40.5074 32.5529 39.7824Z" fill="currentColor"/>
+</svg> </p><br>
+<p style="font-size: 0.9rem;">
+    <i class="fa-regular fa-copyright"></i>Dibuat oleh cinta mu 14 februari 2026
+</p>
+</div>
+
+
+
+</body>
+</html>
